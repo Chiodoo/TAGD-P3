@@ -1,0 +1,106 @@
+\documentclass[a4paper, 11pt]{article}
+
+% Pacchetti per la matematica
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+
+% Pacchetti per lingua e formattazione
+\usepackage[italian]{babel}
+\usepackage[utf8]{inputenc}
+
+% Margini ridotti per ottimizzare lo spazio del formulario
+\usepackage[margin=2cm]{geometry}
+
+% Impostazioni Intestazione
+\title{Formulario TAGD}
+\author{Marco Chiodo}
+\date{} % Rimuove la data
+
+\begin{document}
+
+\maketitle
+
+% --- INIZIA A SCRIVERE QUI IL TUO FORMULARIO ---
+
+\section{Parametri di Base}
+\begin{itemize}
+    \item \textbf{N}: Numero totale di ennuple.
+    \item \textbf{l}: Dimensione del record
+    \item \textbf{L}: Dimensione del blocco
+    \item \textbf{$f_b = \frac Ll$}: Fattore di blocco
+    \item \textbf{$B = \frac N{f_b}$}: Numero di blocchi occupati dalla relazione
+    \item \textbf{P}: Numero pagine buffer
+    \item \textbf{p}: Altezza indice
+    \item \textbf{s}: Selettività ricerca
+\end{itemize}
+
+
+\section{Selezione}
+\subsection{Scansione sequenziale (File Heap / Disordinato)}
+Costo nell'ordine del numero di blocchi occupati dalla relazione: $B$.
+
+\subsection{Indice}
+\begin{itemize}
+    \item Caso puntuale: $p+1$
+    \item Caso puntuale con buffer: $(p-h)+1$
+    \item Campo non chiave (Cluster / Primario): $p+\text{ceil}(\frac s{f_b})$
+    \item Campo non chiave (Non Cluster / Secondario): $p+s$
+\end{itemize}
+
+\subsection{Hash}
+\begin{itemize}
+    \item Hashing statico: 1
+    \item Hashing estendibile: 2
+    \item Se la directory è nel buffer: 1
+\end{itemize}
+
+
+\section{Inserimento}
+
+\subsection{Heap}
+\begin{itemize}
+    \item Senza vincoli di chiave: 1
+    \item Con vincolo di chiave: $B+1$
+\end{itemize}
+
+\subsection{B-Tree}
+$((p-h)+1)+2$\\
+Se indice secondario bisoga aggiornare tutti i b-tree
+
+
+\section{Ordinamento}
+
+\begin{itemize}
+    \item Costo standard 2 vie, 3 buffer: $2\cdot B\cdot \log_2{B}$
+    \item Ottimizzato con P buffer: $3\cdot B$ se $P\ge \sqrt{B}$
+    \item Numero di passate $i$: minimo di $i$ tale che $P^i \ge B$
+\end{itemize}
+
+
+\section{Join}
+\subsection{Nested Loop Senza Indici}
+\begin{itemize}
+    \item Algoritmo base: $B_1+(B_1\cdot B_2)$
+    \item Con buffer da P pagine: $B_1+(\text{ceil}(\frac{B_1}{P-1})\cdot B_2)$
+\end{itemize}
+
+\subsection{Nested Loop Con Indici}
+
+\begin{itemize}
+    \item Costo base: $B_1+N_1\cdot(p+1)$
+    \item Con buffer: $B_1+N_1\cdot(p-h+1)$
+    \item Con selezione su $R_1$ di costo $C_1$: $C_1+s_1\cdot(p-h+1)$
+\end{itemize}
+
+\subsection{Merge Join}
+\begin{itemize}
+    \item File Ordinati: $B_1+B_2$
+    \item File non ordinati: $3\cdot (B_1+B_2)$
+\end{itemize}
+
+\subsection{Hash Join}
+Se $P^2 > min(B_1, B_2)$: $3\cdot (B_1+B_2)$
+
+
+\end{document}
