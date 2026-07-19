@@ -1,0 +1,130 @@
+    \documentclass[11pt,a4paper]{article}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \usepackage{amsmath,amssymb}
+    \usepackage{booktabs}
+    \usepackage{geometry}
+    \usepackage{hyperref}
+    \usepackage{siunitx}
+    \usepackage{pifont}
+    \geometry{margin=2.5cm}
+
+    \title{Definizioni e utili}
+    \author{Marco Chiodo}
+    \date{Definizioni e utili}
+
+    \begin{document}
+    \maketitle
+
+
+    \begin{itemize}
+        \item \textbf{Tempo di Risposta}: Tempo necessario ad un sistema per reagire ad una richiesta.
+        \item \textbf{Throughput}: Numero di richieste evase peru unità di tempo.
+        \item \textbf{Availability}: Frazione di tempo durante la quale il sistema è attivo e accessibile per i suoi utenti.
+        \item \textbf{Scalability}: Un sistema è detto \textit{scalabile} se le sue prestazioni non degradano significativamente al crescere del numero dei suoi utenti.
+        \item \textbf{Thrashing} $\Rightarrow$ \textbf{No Admission Control} $\Rightarrow$ Non respinge le richieste in eccesso.
+        \item \textbf{No Thrashing} $\Rightarrow$ \textbf{Admission Control} $\Rightarrow$ Respinge le richieste in eccesso.
+        \item \textbf{Modelli Simulativi}: Basati su un programma che simula i diversi comportamenti del sistema.
+        \item \textbf{Modelli Analitici}: Costituiti da un insieme di formule e/o algoritmi che forniscono i valori delle misure di prestazioni desiderate in funzione del workload.
+        \item \textbf{Service Demand}: Tempo totale medio speso da una transazione in una data risorsa.
+    \end{itemize}
+
+    \section{QN}
+    \subsection{Classi di Workload Aperte}
+    Una classe di workload è detta aperta quando:
+    \begin{itemize}
+        \item L'intensità di workload è specificato tramite un tasso di arrivi.
+        \item Il numero di clienti nel sistema è potenzialmente illimitato.
+        \item Il throughput è fornito come parametro di input (in equilibrio è pari al tasso di arrivi)
+    \end{itemize}
+
+    \subsection{Classi di Workload Chiuse}
+    Una classe di workload è detta chiusa se:
+    \begin{itemize}
+        \item L'intensità del workload è specificata dalla popolazione interna del sistema.
+        \item Il numero di clienti del sistema è limitato e conosciuto.
+        \item Il throughput è un parametro di output. Si ottiene risolvendo il modello QN.
+    \end{itemize}
+
+    \subsection{TIpi di Risorse}
+    Possiamo usare nei modelli QN 3 tipi di risorse:
+    \begin{itemize}
+    \item \textbf{Load Independent}: Il tasso di servizio non dipende dal carico o dal numero di richieste in coda (Si pensi a un singolo processore o a un disco fisso: il tempo fisico necessario per eseguire una determinata istruzione o leggere un blocco di dati rimane costante, indipendentemente da quante altre transazioni stiano aspettando il loro turno nella coda).
+    \item \textbf{Load Dependent}: Il tasso di servizio è funzione del numero di richieste in coda (Si pensi ad una lan condivisa da più utenti, più utenti sono connessi simultaneamente più la larghezza di banda per utente si ridurrà).
+    \item \textbf{Delay}: Non ci sta una coda (Si pensi al "think time" di un utente umano: il tempo che l'utente impiega per leggere i contenuti di una pagina web prima di cliccare su un link successivo introduce un ritardo puro, senza che le richieste debbano accodarsi per competere per una risorsa. È utile anche per modellare componenti dedicati in modo esclusivo a una richiesta).
+    \end{itemize}
+
+    \subsection{Notazione di una QN}
+    \begin{itemize}
+        \item \textbf{$K$}: Numero di code in una QN.
+        \item \textbf{$R$}: Numero di classi in una QN.
+        \item \textbf{$\overrightarrow{\lambda} = (\lambda_1,...,\lambda_r)$}: Vetore dei tassi di arrivo per una QN aperta multi-classe.
+        \item \textbf{$\overrightarrow{N} = (N_1,...,N_r)$}: Vetore della popolazione per una QN chiusa multi-classe.
+        \item \textbf{$D_{i,r}$}: Service Demand dei clienti di classe $r$ presso la coda $i$.
+        \item \textbf{$\text{Prior(r)}$}: Priorità della classe $r$.
+        \item \textbf{$X_{0,r}$}: Throughput di richieste di classe $r$.
+        \item \textbf{$R_{0,r}$}: TEmpo di risposta per richieste di classe $r$.
+    \end{itemize}
+
+    \section{Parametri}
+    \subsection{Variabili Operazionali}
+    Solitamente misurabili direttamente:
+    \begin{itemize}
+        \item \textbf{T}: Lunghzza del periodo di osservazione.
+        \item \textbf{K}: Numero di risorse nel sistema.
+        \item \textbf{$B_i$}: Tempo in cui la risorsa $i$ è occupata (busy) nel periodo di osservazione $T$.
+        \item \textbf{$A_i$}: Nuumero totale di richieste di servizio (o arrivi) alla risorsa i nel periodo di osservazione $T$.
+        \item \textbf{$A_0$}: Numero totale di richieste arrivate al sistema nel periodo di osservazione $T$.
+        \item \textbf{$C_i$}: Numero totale di richieste evase dalla risorsa i nel periodo di osservazione $T$.
+        \item \textbf{$C_0$}: Numero totale di richieste evase dal sistema nel periodo di osservazione $T$.
+    \end{itemize}
+
+    \subsection{Metriche Derivate}
+    \begin{itemize}
+        \item \textbf{$S_i = \frac{B_i}{C_i}$}: Tempo medio di servizio per la risorsa $i$.
+        \item \textbf{$U_i = \frac{B_i}{T}$}: Utilizzazione della risorsa $i$.
+        \item \textbf{$X_i = \frac{C_i}{T}$}: Throughput della risorsa $i$.
+        \item \textbf{$\lambda_i = \frac{A_i}{T}$}: Tasso degli arrivi alla risorsa $i$.
+        \item \textbf{$X_0 = \frac{C_0}{T}$}: Throughput del sistema.
+    \end{itemize}
+
+    \section{Leggi Operazionali}
+    
+    \subsection{Utilization Law}
+    Definiamo l'utilizzazione come il tempo medio di servizio per il throughput: $U_i = S_i\cdot X_i$ nel caso dove la risorsa $i$ è in equilibrio allora abbiamo che $\lambda_i = X_i$, quindi $U_I = S_i\cdot \lambda_i$.
+    \begin{itemize}
+        \item In caso la risosa $i$ disponga di $m$ server (cpu multi-core) allora: $U_i = \frac{S_i\cdot X_i}{m}$
+    \end{itemize}
+
+    \subsection{Service Demand Law}
+    Il Service Demand $D_i$ indica il tempo totale medio speso da una richiesta nella risorsa $i$, esso è pari alla somma dei singoli tempi di visita, fino ad evasione della richiesta (una richiesta può visitare una risorsa più volte prima di essere evasa)
+    Posso calcolarlo come:
+    \begin{equation}
+        D_i = \frac{B_i}{C_0} = \frac{U_i\cdot T}{C_0} = \frac{U_i}{\frac{C_0}{T}} = \frac{U_i}{X_0}
+    \end{equation}
+    Oppure più intuitivamente come il tempo di servizio medio della risorsa $i$ moltiplicato al numero di visite medio della risorsa $i$: $D_i = S_i\cdot V_i$
+
+    \subsection{Forced Flow Law}
+    Ci serve lper legare il throughput di una risorsa $i$, $X_i$ a quello del sistema $X_0$:
+    \begin{equation}
+        X_i = X_0 \cdot V_i
+    \end{equation}
+    
+    \subsection{Little's Law}
+    Ci dice il numero medio di clienti in un centro $i$, $N_i$, a patto che non vengano creati o distrutti clienti.
+    \begin{equation}
+        N_i = X_i\cdot R_i
+    \end{equation}
+    Dove $R_i$ è il tempo di risposta medio del centro $i$ inclusivo del tempo di coda\\
+    Possiamo anche calcolare il nuemro delle sole richeste in coda: $N_i^W = X_i\cdot W_i$, dove $W_i$ è il tempo di coda medio al centro $i$.
+    Possiamo anche calcolare il numero medio di clienti in un centro come il tempo medio trascorso nel centro moltiplicato al tasso di espulsione.
+
+    \subsection{Interactive Response Time Law}
+    Simulativi $Z$ il thinktime e diciamo che ci sono $M$ utenti, allora siano $\bar{M}$ il numero di utenti in fase di think e $\bar{N}$ il numero di utenti in attesa di risposta, quindi $M = \bar{M} + \bar{N}$.\\
+    Per la legge di Little, abbiamo anche che:
+    \begin{equation}
+    \bar{M} = X_0\cdot Z\qquad \bar{N} = X_0\cdot R\qquad M = X_0(Z+R)\qquad R = \frac{M}{X_0} - Z
+    \end{equation}
+
+
+    \end{document}

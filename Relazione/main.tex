@@ -66,6 +66,7 @@ Questo valore, tuttavia, garantisce solo che il sistema sia fisicamente realizza
 detto che $m=3$ sia il numero di core effettivamente installato, né che sia coerente con l'utilizzazione media del 23\% dichiarata per il progetto. Determinare $m$ unicamente da questo vincolo, senza un ulteriore confronto con i dati osservati, porterebbe a un dimensionamento privo di una validazione rassicurante.
 
 \subsection{Determinazione del numero di core tramite calibrazione incrociata:}
+\label{sec:core-calib}
 
 Il numero di core effettivo può essere ricavato sfruttando due stime indipendenti della service demand $D_{cpu}$ e imponendo che siano coerenti tra loro.
 
@@ -128,12 +129,9 @@ $2$ serventi indipendenti anziché come un unico servente aggregato.
 
 \subsection{Throughput di sistema:}
 
-Il throughput del sistema viene stimato direttamente dalla traccia di workload:
-\begin{equation}
-X_0 = \frac{N}{T} = \frac{100\,000}{86\,400} = 1.157407\ \text{tx/s}
-\end{equation}
-Questo valore, indipendente dal numero di core scelto, è coerente con quello usato per calibrare
-$m$ nella sezione precedente.
+Il throughput di sistema è già stato ricavato dalla traccia nella Sez.~\ref{sec:core-calib}, in
+fase di calibrazione del numero di core: $X_0 = N/T = 1.1574$ tx/s. Trattandosi di una misura indipendente dal numero di core, esso costituisce un parametro diretto del modello e viene
+qui richiamato come base per il calcolo delle service demand nella sezione seguente.
 
 \subsection{Service demands:}
 
@@ -258,6 +256,7 @@ $N=X_0\cdot R = 1.1392\times 2.1235 = 2.42$).
 \section{Carico massimo per-classe con $U_{bottleneck}\le 70\%$:}
 Il secondo punto dell'analisi ha l'obiettivo di determinare il massimo carico di lavoro che il sistema può sostenere mantenendo l'utilizzazione del centro collo di bottiglia non superiore al 70\%. A tal fine, il workload viene dapprima suddiviso in classi omogenee mediante tecniche di clustering, così da verificare se le diverse tipologie di transazioni presentino domande di servizio differenti. Successivamente, utilizzando il modello prestazionale ricavato nei capitoli precedenti, viene calcolato il throughput massimo ammissibile e il corrispondente carico per ciascuna classe, verificando inoltre quale centro rimanga il collo di bottiglia del sistema al crescere del carico.
 \subsection{Decomposizione in classi di workload:}
+\label{sec:classi}
 
 Analizzando la traccia con lo strumento di \emph{Workload Analysis} di JMT (clustering k-means a
 2 cluster, $50\,000$ osservazioni ciascuno) emergono due classi di transazioni, di peso identico
@@ -290,7 +289,7 @@ determinante al Punto 3, dove il rapporto letture/scritture, non l'utilizzazione
 condiziona il costo del mirroring.
 
 Come verifica di coerenza, ricostruendo l'utilizzazione della CPU dal modello multi-classe si
-ottiene $U_{CPU}=\sum_r D_{cpu,r}\cdot X_{0,r}/m = 0.2300$, identica al valore misurato.
+ottiene $U_{CPU}=\sum_r D_{cpu,r}\cdot X_{0,r}/m = 0.2300$, identica al valore misurato ($X_{0,r}$ ottenuto come $X_{0,r} = X_0\cdot p_r$).
 
 \subsection{Carico massimo sostenibile:}
 
@@ -469,12 +468,10 @@ Il modello è stato realizzato utilizzando due moduli della suite JMT: il modulo
 \emph{JSIMgraph} per tutte le simulazioni (Punti 1 e 3).
 
 \subsection{Workload Analysis -- decomposizione in classi:}
-La traccia \texttt{transactions.csv} è stata analizzata con il modulo di Workload Analysis
-(clustering k-means a 2 cluster, $50\,000$ osservazioni ciascuno). Da questa analisi provengono i
-parametri per-classe alla base del modello: i pesi $p_1=p_2=0.5$, il numero medio di visite ai
-dischi $V_r$ e la frazione di letture $\%\text{Read}_r$ di ciascuna classe (cfr.\ la tabella delle
-classi di workload). Su tali valori sono state ricavate analiticamente le service demand per-classe
-che alimentano il simulatore.
+Il modulo di Workload Analysis è stato impiegato per la decomposizione del carico nelle due classi
+già descritta nella Sez.~\ref{sec:classi}. Da quell'analisi provengono i parametri per-classe che
+alimentano il simulatore -- i pesi $p_r$, il numero medio di visite $V_r$ e la frazione di letture
+$\%\text{Read}_r$ -- dai quali sono state ricavate analiticamente le service demand per classe.
 
 \subsection{JSIMgraph -- Punto 1 e Punto 3:}
 Tutte le simulazioni adottano la stessa topologia, minimale: \emph{Source} $\to$ Queue ``CPU''
