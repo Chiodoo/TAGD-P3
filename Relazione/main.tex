@@ -266,6 +266,7 @@ letture/scritture:
 \begin{table}[h]
 \centering
 \caption{Classi di workload individuate tramite clustering}
+\label{tab:classi}
 \begin{tabular}{lrr}
 \toprule
  & Classe 1 & Classe 2 \\
@@ -398,6 +399,7 @@ in accordo con la Tabella~\ref{tab:raid1}: $n=4$ non basta (72.26\%), $n=5$ sodd
 (69.37\%).
 
 \subsection{Risposta al Punto 3:}
+\label{sec:raid1-fattibilita}
 Sì, è possibile sostenere il throughput $X_{0,\max}$ con RAID-1 mantenendo l'utilizzazione
 del collo di bottiglia $\le 70\%$: sono necessari \textbf{5 dischi} (mirror a 5 vie). La tolleranza ai
 guasti richiesta (almeno 1 disco) è ampiamente soddisfatta, poiché un mirror a 5 vie tollera fino a
@@ -415,7 +417,8 @@ le classi di workload: la classe 1 (90\% scritture) genera una service demand su
 pari a $D_{RAID\text{-}1,1}=1.5087$ s, contro $D_{RAID\text{-}1,2}=0.4606$ s della classe 2 (90\%
 letture) -- un rapporto di $3.28\times$, invisibile nei Punti 1 e 2 dove le classi erano
 indistinguibili in termini di utilizzazione aggregata. È proprio la decomposizione in classi
-effettuata al Punto 2 a rendere possibile attribuire questo costo differenziale.
+effettuata al Punto 2 a rendere possibile attribuire questo costo differenziale (la derivazione di
+$D_{RAID\text{-}1,r}$ è riportata nel dettaglio in Sez.~\ref{sec:jsimgraph}).
 
 \subsection{Validazione tramite simulazione JMT \textit{(JSIMgraph)}:}
 
@@ -474,6 +477,7 @@ alimentano il simulatore -- i pesi $p_r$, il numero medio di visite $V_r$ e la f
 $\%\text{Read}_r$ -- dai quali sono state ricavate analiticamente le service demand per classe.
 
 \subsection{JSIMgraph -- Punto 1 e Punto 3:}
+\label{sec:jsimgraph}
 Tutte le simulazioni adottano la stessa topologia, minimale: \emph{Source} $\to$ Queue ``CPU''
 $\to$ Queue ``RAID'' $\to$ \emph{Sink}, con due classi aperte. Ogni stazione ha una sola visita e
 tempo di servizio esponenziale pari direttamente alla service demand per classe $D_{i,r}$: ciò è
@@ -492,21 +496,44 @@ $\lambda_r = X_{0,\max}/2 = 1.7613$ tx/s; service time sul RAID pari alle servic
 $D_{RAID\text{-}1,1}=1.5087$ s e $D_{RAID\text{-}1,2}=0.4606$ s. La CPU resta invariata.
 \end{itemize}
 
-Le due service demand del Punto 3 si ottengono analiticamente dai parametri della Workload
-Analysis, tramite il modello del centro RAID-1 per classe con $n=5$ dischi:
+Le due service demand del Punto 3 si ottengono generalizzando alle singole classi lo stesso
+principio già usato per ricavare l'Eq.~\eqref{eq:uraid1}: separare il contributo delle letture, che
+sfruttano il parallelismo del mirror, da quello delle scritture, che invece lo annullano perché
+devono essere replicate su ogni disco.
+
+Per la classe $r$, la Workload Analysis fornisce (Tabella~\ref{tab:classi}) il numero medio di
+visite I/O per transazione $V_r$ e la frazione di letture $\rho_r=\%\text{Read}_r/100$. Una
+transazione della classe $r$ genera quindi, in media, $V_r\rho_r$ visite di lettura e
+$V_r(1-\rho_r)$ visite di scrittura. Come nel caso aggregato, ciascuna visita di lettura produce
+una sola visita fisica (un disco qualsiasi del mirror la può servire), mentre ciascuna visita di
+scrittura, dovendo essere replicata su tutti gli $n$ dischi, ne produce $n$. Il lavoro fisico totale
+generato sull'intero array da una transazione di classe $r$ è pertanto
 \begin{equation}
-D_{RAID\text{-}1,r} = S_{raid}\cdot V_r\cdot\big[\rho_r + n\,(1-\rho_r)\big],
+D_{RAID\text{-}1,r} = S_{raid}\cdot\Big[\underbrace{V_r\rho_r}_{\text{letture}}
++ \underbrace{n\cdot V_r(1-\rho_r)}_{\text{scritture}}\Big]
+= S_{raid}\cdot V_r\cdot\big[\rho_r + n\,(1-\rho_r)\big],
 \label{eq:draid1-perclasse}
 \end{equation}
-con $S_{raid}=0.1191$ s e $\rho_r$ frazione di letture della classe. Ne risulta
-$D_{RAID\text{-}1,1}=0.1191\times 2.7552\times[0.1002+5(0.8998)]=1.5087$ s (classe write-heavy) e
-$D_{RAID\text{-}1,2}=0.1191\times 2.7599\times[0.8996+5(0.1004)]=0.4606$ s (classe read-heavy).
+espressione che, a differenza dell'Eq.~\eqref{eq:uraid1}, non viene divisa per $n$: è infatti la
+service demand \emph{totale} della classe da fornire al simulatore, che applicherà internamente la
+divisione per $n$ tramite la stessa legge dell'utilizzazione multi-servente $U=X_0 D/n$ usata in
+tutto il resto del report. Con $S_{raid}=0.1191$ s ed $n=5$ dischi si ottiene:
+\[
+D_{RAID\text{-}1,1}=0.1191\times 2.7552\times[0.1002+5(0.8998)]=1.5087\ \text{s (classe write-heavy)},
+\]
+\[
+D_{RAID\text{-}1,2}=0.1191\times 2.7599\times[0.8996+5(0.1004)]=0.4606\ \text{s (classe read-heavy)}.
+\]
 
-La differenza di comportamento tra letture (servite da un solo disco) e scritture (replicate su
-tutti gli $n$ dischi) \emph{non} è già
-incorporata nei valori di service demand per classe tramite il fattore $[\rho_r + n(1-\rho_r)]$.
-Fornendo al simulatore direttamente i $D_{RAID\text{-}1,r}$, la stazione multi-servitore a 5 dischi
-riproduce correttamente l'utilizzazione del centro senza necessità di una topologia dedicata.
+Il termine $[\rho_r+n(1-\rho_r)]$ agisce come un fattore di amplificazione dovuto al mirroring: vale
+$1$ per una classe di sole letture ($\rho_r=1$, nessuna penalità) e sale fino a $n$ per una classe di
+sole scritture ($\rho_r=0$, penalità massima). La classe 1, quasi tutta scritture
+($\rho_1=10.02\%$), si trova vicina a quest'ultimo estremo, mentre la classe 2, quasi tutta letture
+($\rho_2=89.96\%$), è vicina al primo: è questa asimmetria, già presente nei dati ma invisibile a
+livello di utilizzazione aggregata, a produrre il rapporto $3.28\times$ tra le due service demand
+osservato in Sez.~\ref{sec:raid1-fattibilita}. Fornendo al simulatore direttamente i
+$D_{RAID\text{-}1,r}$ così calcolati, la stazione multi-servitore a 5 dischi riproduce correttamente
+l'utilizzazione del centro senza necessità di una topologia dedicata per letture e scritture.
 
 \section{Conclusioni:}
 
