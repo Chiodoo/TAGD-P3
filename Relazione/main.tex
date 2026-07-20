@@ -248,6 +248,7 @@ tempo di risposta di sistema misurato indipendentemente da JMT (2.1235 s), a con
 coerenza interna della simulazione.
 
 \subsection{Risposta al Punto 1:}
+\label{sec:risposta-punto1}
 Si assume come risultato del Punto 1 la stima JMT, corretta per la natura multi-servente della
 CPU: tempo di risposta medio complessivo $R_{TOT}=2.12$ s ($R_{cpu}=1.78$ s, $R_{raid}=0.34$ s),
 numero medio di job nel sistema $N=2.42$ (verificato con la legge di Little:
@@ -424,7 +425,12 @@ $D_{RAID\text{-}1,r}$ è riportata nel dettaglio in Sez.~\ref{sec:jsimgraph}).
 
 Il modello RAID-1 a 5 dischi è stato inoltre simulato in JSIMgraph, con tasso di arrivo per classe
 pari a $X_{0,\max,r}=1.7613$ tx/s e service demand per classe $D_{RAID\text{-}1,1}=1.5087$ s,
-$D_{RAID\text{-}1,2}=0.4606$ s. Il confronto con il modello analitico è riportato in
+$D_{RAID\text{-}1,2}=0.4606$ s. Oltre a throughput e utilizzazioni, già confrontabili con il modello
+analitico come nel Punto 1, JSIMgraph riporta anche gli indici prestazionali globali del sistema --
+tempo di risposta $R_{TOT}$ e numero medio di job $N$ -- direttamente dal report \emph{Global} della
+simulazione: per un centro multi-servente multi-classe come quello qui analizzato non esiste una
+forma chiusa altrettanto semplice del $R=D/(1-U)$ usato nel Punto 1, per cui questi due indici sono
+disponibili solo dalla simulazione e non dal modello analitico. Il confronto completo è riportato in
 Tabella~\ref{tab:punto3}.
 
 \begin{table}[h]
@@ -438,18 +444,31 @@ Tabella~\ref{tab:punto3}.
 $X_0$ [tx/s] & 3.5225 & 3.5257 \\
 $U_{CPU}$ & 0.7000 & 0.7063 \\
 $U_{RAID}$ & 0.6937 & 0.7003 \\
+$R_{TOT}$ [s] & n.d.$^\ast$ & 3.21 \\
+$N$ [job] & n.d.$^\ast$ & 11.26 \\
+\midrule
+\multicolumn{3}{p{0.85\textwidth}}{\footnotesize $^\ast$ non disponibile in forma chiusa per un
+centro multi-servente multi-classe: ricavato unicamente dalla simulazione.}\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Gli scostamenti tra i due approcci (entro l'1\% su tutte le grandezze) sono imputabili al rumore
-di simulazione e non a errori di parametrizzazione, come confermato ricalcolando i service
-demand impliciti dai risultati JMT tramite la legge dell'utilizzazione: $D_{cpu}$ risulta 1.7736 s
-(JMT) contro 1.7885 s (modello), $D_{raid}$ risulta 0.3320 s (JMT) contro 0.3283 s (modello).
+Gli scostamenti tra i due approcci sulle grandezze confrontabili (entro l'1\% su $X_0$, $U_{CPU}$,
+$U_{RAID}$) sono imputabili al rumore di simulazione e non a errori di parametrizzazione, come
+confermato ricalcolando i service demand impliciti dai risultati JMT tramite la legge
+dell'utilizzazione: $D_{cpu}$ risulta 1.7736 s (JMT) contro 1.7885 s (modello), $D_{raid}$ risulta
+0.3320 s (JMT) contro 0.3283 s (modello).
+
+I valori di $R_{TOT}$ e $N$ riportati in tabella sono a loro volta coerenti tra loro: applicando la
+legge di Little con il throughput JMT si ottiene $N = X_0\cdot R_{TOT} = 3.5257\times 3.21 = 11.31$
+job, in accordo (entro l'arrotondamento a due cifre di $R_{TOT}$) con il valore $N=11.26$ riportato
+direttamente dal simulatore -- la stessa verifica incrociata già effettuata al Punto 1
+(Sez.~\ref{sec:risposta-punto1}).
 
 Il passaggio a RAID-1 comporta inoltre un evidente degrado prestazionale rispetto al Punto 1: il
-tempo di risposta di sistema passa da $R=2.12$ s a $R=3.21$ s ($+51\%$), e il numero medio di job
-nel sistema da $N=2.42$ a $N=11.26$ -- conseguenza diretta dell'aver spinto entrambi i centri
+tempo di risposta di sistema passa da $R=2.12$ s (Tabella~\ref{tab:punto1}) a $R=3.21$ s
+($+51\%$), e il numero medio di job nel sistema da $N=2.42$ a $N=11.26$ -- conseguenza diretta
+dell'aver spinto entrambi i centri
 vicino alla soglia del 70\% di utilizzazione.
 
 \subsection{Osservazione conclusiva sul RAID-1:}
