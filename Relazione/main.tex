@@ -137,9 +137,7 @@ qui richiamato come base per il calcolo delle service demand nella sezione segue
 
 Coerentemente con l'approccio adottato, le service demands non vengono ottenute come semplice
 media dei tempi riportati nella traccia, ma tramite inversione della legge dell'utilizzazione,
-usando il throughput e le utilizzazioni medie fornite dal progetto -- separando così il
-dimensionamento hardware (numero di core, numero di dischi) dalla calibrazione del modello
-prestazionale.
+usando il throughput e le utilizzazioni medie fornite dal progetto.
 
 Per il centro CPU, con $m=9$ servitori paralleli:
 \begin{equation}
@@ -454,10 +452,7 @@ centro multi-servente multi-classe: ricavato unicamente dalla simulazione.}\\
 \end{table}
 
 Gli scostamenti tra i due approcci sulle grandezze confrontabili (entro l'1\% su $X_0$, $U_{CPU}$,
-$U_{RAID}$) sono imputabili al rumore di simulazione e non a errori di parametrizzazione, come
-confermato ricalcolando i service demand impliciti dai risultati JMT tramite la legge
-dell'utilizzazione: $D_{cpu}$ risulta 1.7736 s (JMT) contro 1.7885 s (modello), $D_{raid}$ risulta
-0.3320 s (JMT) contro 0.3283 s (modello).
+$U_{RAID}$) sono imputabili al rumore di simulazione e non a errori di parametrizzazione.
 
 I valori di $R_{TOT}$ e $N$ riportati in tabella sono a loro volta coerenti tra loro: applicando la
 legge di Little con il throughput JMT si ottiene $N = X_0\cdot R_{TOT} = 3.5257\times 3.21 = 11.31$
