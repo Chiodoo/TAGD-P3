@@ -126,5 +126,24 @@
     \bar{M} = X_0\cdot Z\qquad \bar{N} = X_0\cdot R\qquad M = X_0(Z+R)\qquad R = \frac{M}{X_0} - Z
     \end{equation}
 
+    \section{Limiti}
+    
+    \subsection{Throughput}
+    Upper Bound sul Throughput:
+    \begin{itemize}
+        \item \textbf{Carico Elevato}: $X_0 \le \frac{1}{\text{max}\{D_i\}}$
+        \item \textbf{Carico Leggero}: $X_0 \le \frac{N}{\sum_r{D_i}}$
+    \end{itemize}
+
+    Quindi:
+    \begin{equation}
+        X_0 \le \text{min}\left\{\frac{1}{\text{max}\{D_i\}},\space\frac{N}{\sum_i{D_i}}\right\}
+    \end{equation}
+
+    \subsection{Tempo di Risposta}
+    Utilizzando la legge di Little ($R=\frac{N}{X_0}$), deriviamo il lower bound sul tempo di risposta:
+    \begin{equation}
+        R \ge \frac{N}{\min\left\{ \frac{1}{\max\{D_i\}}, \ \frac{N}{\sum_{i} D_i} \right\}} = \max\left\{ \sum_{i} D_i, \ N \cdot \max\{D_i\} \right\}
+    \end{equation}
 
     \end{document}
